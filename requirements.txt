@@ -1,0 +1,5 @@
+python-environ==0.4.54
+
+selenium==4.8.0
+
+webdriver-manager==3.8.5
