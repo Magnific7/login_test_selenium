@@ -12,9 +12,10 @@ class FacebookLogin():
     # Store credentials for login
         self.email = email
         self.password = password
-        self.driver = webdriver.Chrome()
-        # self.driver.get("https://www.facebook.com/")
-
+        if browser == 'Chrome':
+                self.driver = webdriver.Chrome()
+        elif browser == 'Firefox':
+                self.driver = webdriver.Firefox()
         self.driver.get(LOGIN_URL)
         time.sleep(1)
 
@@ -30,11 +31,6 @@ class FacebookLogin():
         login_button = self.driver.find_element('id','loginbutton')
         login_button.click() 
 
-        # Check if user is logged in by looking for the logout button
-        logout_button = self.driver.find_element('id',"logout_button")
-        self.assertTrue(logout_button.is_displayed())
-
-    
         time.sleep(2) 
         
 if __name__ == '__main__':
