@@ -9,21 +9,32 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import time 
 import unittest
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+email=os.getenv('FB_EMAIL')
+password=os.getenv('INCORRECT_PASSWORD')
+browser=os.getenv('BROWSER')
+LOGIN_URL = os.getenv('LOGIN_URL')
 
 class FacebookIncorrectLogin(unittest.TestCase):
-    def __init__(self, email, password="dummy_pass", browser='Chrome', driver=None):
-        unittest.TestCase.__init__(self)
-        # Store credentials for login
+    def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
+        super().__init__(testname)
         self.email = email
         self.password = password
         self.browser = browser
         self.driver = driver
+
+    def setUp(self):
         if self.browser == 'Chrome':
-                self.driver = webdriver.Chrome()
+            self.driver = webdriver.Chrome()
         elif self.browser == 'Firefox':
-                self.driver = webdriver.Firefox()
-        self.driver.get(os.environ['LOGIN_URL'])
+            self.driver = webdriver.Firefox()
+        self.driver.get(LOGIN_URL)
         time.sleep(1)
+        time.sleep(2) 
 
     def test_incorrect_password(self):
         email = self.driver.find_element('id','email')
@@ -42,15 +53,12 @@ class FacebookIncorrectLogin(unittest.TestCase):
         if error_element:
             error_message = error_element.text
             self.assertEqual(error_message, "Wrong Credentials")
-            print("Login was unsuccessful.")
         else:
             self.assertFalse(False, "Login was successful.")
-            print("Login was successful.")
-
+            
+    def tearDown(self):
+        self.driver.quit()
 
 if __name__ == '__main__':
-    try:
-        fb_login = FacebookIncorrectLogin(email=os.environ['FB_EMAIL'], password="dummy_pass", browser=os.environ['BROWSER'])
-        fb_login.test_incorrect_password()
-    except Exception as e:
-        print("Error:", e)
+    test_case = FacebookIncorrectLogin('test_incorrect_password', email, password, browser)
+    unittest.main(argv=[''], exit=False)
