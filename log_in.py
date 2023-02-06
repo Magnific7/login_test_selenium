@@ -40,7 +40,7 @@ class FacebookLogin(unittest.TestCase):
         wait.until(EC.url_changes(self.driver.current_url))
         
         current_url = self.driver.current_url
-        if "login" not in current_url:
+        if "facebook.com/login" not in current_url:
             self.assertTrue(True, "Login was successful.")
             print("Login was successful.")
         else:
