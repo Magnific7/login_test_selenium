@@ -9,23 +9,36 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import time 
 import unittest
+from dotenv import load_dotenv
 
+
+load_dotenv()
+
+email=os.getenv('FB_EMAIL')
+password=os.getenv('FB_PASSWORD')
+browser=os.getenv('BROWSER')
+LOGIN_URL = os.getenv('LOGIN_URL')
 
 class FacebookLogin(unittest.TestCase):
-    def __init__(self, email, password, browser='Chrome', driver=None):
-    # Store credentials for login
+    def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
+        super().__init__(testname)
         self.email = email
         self.password = password
-        if browser == 'Chrome':
-                self.driver = webdriver.Chrome()
-        elif browser == 'Firefox':
-                self.driver = webdriver.Firefox()
-        self.driver.get(os.environ['LOGIN_URL'])
+        self.browser = browser
+        self.driver = driver
+
+    def setUp(self):
+        if self.browser == 'Chrome':
+            self.driver = webdriver.Chrome()
+        elif self.browser == 'Firefox':
+            self.driver = webdriver.Firefox()
+        self.driver.get(LOGIN_URL)
         time.sleep(1)
+        time.sleep(2) 
 
  
 
-    def login(self):
+    def test_login(self):
         email_element = self.driver.find_element('id','email')
         email_element.send_keys(self.email)
 
@@ -42,14 +55,12 @@ class FacebookLogin(unittest.TestCase):
         current_url = self.driver.current_url
         if "facebook.com/login" not in current_url:
             self.assertTrue(True, "Login was successful.")
-            print("Login was successful.")
         else:
             self.assertTrue(False, "Login was unsuccessful.")
-            print("Login was unsuccessful.")
+
+    def tearDown(self):
+        self.driver.quit()
 
 if __name__ == '__main__':
-    try:
-        fb_login = FacebookLogin(email=os.environ['FB_EMAIL'], password=os.environ['FB_PASSWORD'], browser=os.environ['BROWSER'])
-        fb_login.login()
-    except Exception as e:
-        print("Error:", e)
+    test_case = FacebookLogin('test_login', email, password, browser)
+    unittest.main(argv=[''], exit=False)
