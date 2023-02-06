@@ -1,11 +1,14 @@
 import os
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-import unittest
-
 from webdriver_manager.firefox import GeckoDriverManager
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
 import time 
+import unittest
 
 class FacebookIncorrectLogin(unittest.TestCase):
     def __init__(self, email, password, browser='Chrome', driver=None):
@@ -24,14 +27,18 @@ class FacebookIncorrectLogin(unittest.TestCase):
 
     def test_incorrect_login(self):
         email = self.driver.find_element('id','email')
-        email.send_keys("incorrect_email@example.com")
+        email.send_keys(self.email)
 
         password = self.driver.find_element('id','pass')
-        password.send_keys("incorrect_password")
+        password.send_keys(self.password)
 
         login_button = self.driver.find_element('id','loginbutton')
         login_button.click()
 
+        # Implicit wait
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(EC.url_changes(self.driver.current_url))
+        
         current_url = self.driver.current_url
         if "facebook.com/login" in current_url:
             self.assertTrue(True, "Login was unsuccessful.")
