@@ -1,55 +1,66 @@
 import os
 from selenium import webdriver
-from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-
 import time 
 import unittest
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+email=os.getenv('INCORRECT_EMAIL')
+password=os.getenv('FB_PASSWORD')
+browser=os.getenv('BROWSER')
+LOGIN_URL = os.getenv('LOGIN_URL')
+
 
 class FacebookIncorrectLogin(unittest.TestCase):
-    def __init__(self, email, password, browser='Chrome', driver=None):
-    # Store credentials for login
+    def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
+        super().__init__(testname)
         self.email = email
         self.password = password
-        if browser == 'Chrome':
-                self.driver = webdriver.Chrome()
-        elif browser == 'Firefox':
-                self.driver = webdriver.Firefox()
-        self.driver.get(os.environ['LOGIN_URL'])
+        self.browser = browser
+        self.driver = driver
+
+    def setUp(self):
+        if self.browser == 'Chrome':
+            self.driver = webdriver.Chrome()
+        elif self.browser == 'Firefox':
+            self.driver = webdriver.Firefox()
+        self.driver.get(LOGIN_URL)
         time.sleep(1)
-
-
         time.sleep(2) 
 
     def test_incorrect_login(self):
-        email = self.driver.find_element('id','email')
+        email = self.driver.find_element(By.ID, 'email')
         email.send_keys(self.email)
 
-        password = self.driver.find_element('id','pass')
+        password = self.driver.find_element(By.ID, 'pass')
         password.send_keys(self.password)
 
-        login_button = self.driver.find_element('id','loginbutton')
+        login_button = self.driver.find_element(By.ID, 'loginbutton')
         login_button.click()
 
-        # Implicit wait
+        # Explicit wait
         wait = WebDriverWait(self.driver, 10)
-        wait.until(EC.url_changes(self.driver.current_url))
-        
-        current_url = self.driver.current_url
-        if "facebook.com/login" in current_url:
-            self.assertTrue(True, "Login was unsuccessful.")
+        error_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".fsl.fwb.fcb")))
+
+        if error_element:
+            error_message = error_element.text
+            self.assertEqual(error_message, "Wrong Credentials")
             print("Login was unsuccessful.")
         else:
-            self.assertTrue(False, "Login was successful.")
+            self.assertFalse(False, "Login was successful.")
             print("Login was successful.")
-            
+
+    def tearDown(self):
+        self.driver.quit()
+
+
+
 if __name__ == '__main__':
-    try:
-        fb_login = FacebookIncorrectLogin(email='dummy@gmail.com', password=os.environ['FB_PASSWORD'], browser=os.environ['BROWSER'])
-        fb_login.test_incorrect_login()
-    except Exception as e:
-        print("Error:", e)
+    test_case = FacebookIncorrectLogin('test_incorrect_login', email, password, browser)
+    unittest.main(argv=[''], exit=False)
