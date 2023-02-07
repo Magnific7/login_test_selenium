@@ -19,7 +19,7 @@ password=os.getenv('INCORRECT_PASSWORD')
 browser=os.getenv('BROWSER')
 LOGIN_URL = os.getenv('LOGIN_URL')
 
-class FacebookIncorrectLogin(unittest.TestCase):
+class PageIncorrectLogin(unittest.TestCase):
     def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
         super().__init__(testname)
         self.email = email
@@ -60,5 +60,5 @@ class FacebookIncorrectLogin(unittest.TestCase):
         self.driver.quit()
 
 if __name__ == '__main__':
-    test_case = FacebookIncorrectLogin('test_incorrect_password', email, password, browser)
+    test_case = PageIncorrectLogin('test_incorrect_password', email, password, browser)
     unittest.main(argv=[''], exit=False)

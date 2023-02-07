@@ -19,7 +19,7 @@ password=os.getenv('FB_PASSWORD')
 browser=os.getenv('BROWSER')
 LOGIN_URL = os.getenv('LOGIN_URL')
 
-class FacebookLogin(unittest.TestCase):
+class PageLogin(unittest.TestCase):
     def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
         super().__init__(testname)
         self.email = email
@@ -62,5 +62,5 @@ class FacebookLogin(unittest.TestCase):
         self.driver.quit()
 
 if __name__ == '__main__':
-    test_case = FacebookLogin('test_login', email, password, browser)
+    test_case = PageLogin('test_login', email, password, browser)
     unittest.main(argv=[''], exit=False)

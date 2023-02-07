@@ -17,7 +17,7 @@ browser=os.getenv('BROWSER')
 LOGIN_URL = os.getenv('LOGIN_URL')
 
 
-class FacebookIncorrectLogin(unittest.TestCase):
+class PageIncorrectLogin(unittest.TestCase):
     def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
         super().__init__(testname)
         self.email = email
@@ -51,10 +51,8 @@ class FacebookIncorrectLogin(unittest.TestCase):
         if error_element:
             error_message = error_element.text
             self.assertEqual(error_message, "Wrong Credentials")
-            print("Login was unsuccessful.")
         else:
             self.assertFalse(False, "Login was successful.")
-            print("Login was successful.")
 
     def tearDown(self):
         self.driver.quit()
@@ -62,5 +60,5 @@ class FacebookIncorrectLogin(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    test_case = FacebookIncorrectLogin('test_incorrect_login', email, password, browser)
+    test_case = PageIncorrectLogin('test_incorrect_login', email, password, browser)
     unittest.main(argv=[''], exit=False)
