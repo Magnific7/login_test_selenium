@@ -11,13 +11,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-email=''
-password=''
+email=os.getenv('BLOCKED_EMAIL')
+password=os.getenv('BLOCKED_ACCOUNT_PASSWORD')
 browser=os.getenv('BROWSER')
 LOGIN_URL = os.getenv('LOGIN_URL')
 
 
-class EmptyCredentialsLogin(unittest.TestCase):
+class BlockedAccountLogin(unittest.TestCase):
     def __init__(self, testname, email=email, password=password, browser='Chrome', driver=None):
         super().__init__(testname)
         self.email = email
@@ -34,7 +34,7 @@ class EmptyCredentialsLogin(unittest.TestCase):
         time.sleep(1)
         time.sleep(2) 
 
-    def test_empty_credentials_login(self):
+    def test_blocked_account_login(self):
         email = self.driver.find_element(By.ID, 'email')
         email.send_keys(self.email)
 
@@ -46,13 +46,13 @@ class EmptyCredentialsLogin(unittest.TestCase):
 
         # Explicit wait
         wait = WebDriverWait(self.driver, 10)
-        error_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".fsl.fwb.fcb")))
+        wait.until(EC.url_changes(self.driver.current_url))
+        current_url = self.driver.current_url
 
-        if error_element:
-            error_message = error_element.text
-            self.assertEqual(error_message, "Wrong Credentials")
+        if "/disabled" in current_url:
+            self.assertTrue(True, "Account has been disabled")
         else:
-            self.assertFalse(False, "Login was successful.")
+            self.assertTrue(False, "Account is active ")
 
     def tearDown(self):
         self.driver.quit()
@@ -60,5 +60,8 @@ class EmptyCredentialsLogin(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    test_case = EmptyCredentialsLogin('test_empty_credentials_login', email, password, browser)
+    test_case = BlockedAccountLogin('test_blocked_account_login', email, password, browser)
     unittest.main(argv=[''], exit=False)
+
+
+# x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x14z4hjw x3x7a5m xngnso2 x1qb5hxa x1xlr1w8 xzsf02u x1yc453h
