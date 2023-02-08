@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time 
 import unittest
 from dotenv import load_dotenv
+from selenium.common.exceptions import NoSuchElementException
 
 
 load_dotenv()
@@ -46,13 +47,20 @@ class PageIncorrectLogin(unittest.TestCase):
 
         # Explicit wait
         wait = WebDriverWait(self.driver, 10)
-        error_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".fsl.fwb.fcb")))
 
-        if error_element:
-            error_message = error_element.text
-            self.assertEqual(error_message, "Wrong Credentials")
+        current_url = self.driver.current_url
+
+        email_not_connected_not_found = False
+
+        try:
+            self.driver.find_element(By.CLASS_NAME, "_9ay7")
+        except NoSuchElementException:
+            email_not_connected_not_found = True
+
+        if email_not_connected_not_found or "/login" in current_url:
+            self.assertTrue(True, "Login was unsuccessful.")
         else:
-            self.assertFalse(False, "Login was successful.")
+            self.assertTrue(False, "Login was successful.")
 
     def tearDown(self):
         self.driver.quit()

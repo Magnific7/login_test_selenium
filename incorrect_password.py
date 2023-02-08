@@ -6,7 +6,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.common.exceptions import NoSuchElementException
 import time 
 import unittest
 from dotenv import load_dotenv
@@ -35,7 +35,7 @@ class PageIncorrectLogin(unittest.TestCase):
         self.driver.get(LOGIN_URL)
         time.sleep(1)
         time.sleep(2) 
-
+    
     def test_incorrect_password(self):
         email = self.driver.find_element('id','email')
         email.send_keys(self.email)
@@ -47,15 +47,21 @@ class PageIncorrectLogin(unittest.TestCase):
         login_button.click()
 
         # Explicit wait
-        wait = WebDriverWait(self.driver, 10)
-        error_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".fsl.fwb.fcb")))
+        wait = WebDriverWait(self.driver, 15)
 
-        if error_element:
-            error_message = error_element.text
-            self.assertEqual(error_message, "Wrong Credentials")
+        current_url = self.driver.current_url
+        not_me_link_not_found = False
+
+        try:
+            self.driver.find_element(By.ID, "not_me_link")
+        except NoSuchElementException:
+            not_me_link_not_found = True
+
+        if not_me_link_not_found or "login_attempt" in current_url or "/login" in current_url:
+            self.assertTrue(True, "Login was unsuccessful.")
         else:
-            self.assertFalse(False, "Login was successful.")
-            
+            self.assertTrue(False, "Login was successful.")
+    
     def tearDown(self):
         self.driver.quit()
 

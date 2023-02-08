@@ -64,3 +64,4 @@ class PageLogin(unittest.TestCase):
 if __name__ == '__main__':
     test_case = PageLogin('test_login', email, password, browser)
     unittest.main(argv=[''], exit=False)
+
